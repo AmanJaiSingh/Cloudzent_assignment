@@ -13,7 +13,7 @@ import { AlertCircle } from "lucide-react";
 export default function LoginPage() {
   const router = useRouter();
   const setToken = useAuthStore((state) => state.setToken);
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,7 +29,8 @@ export default function LoginPage() {
       setToken(res.data.token);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      const errorMessage = err.response?.data?.message || "Unable to connect to the server. Please check your connection.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +38,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md space-y-8 rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-xl ring-1 ring-neutral-200 dark:ring-neutral-800"
@@ -53,7 +54,7 @@ export default function LoginPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               className="flex items-center gap-2 rounded-md bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-600 dark:text-red-400"

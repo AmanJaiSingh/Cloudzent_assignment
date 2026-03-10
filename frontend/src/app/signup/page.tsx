@@ -12,7 +12,7 @@ import { AlertCircle } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,7 +23,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData(prev => ({...prev, [e.target.id]: e.target.value}));
+    setFormData(prev => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -35,7 +35,8 @@ export default function SignupPage() {
       await api.post("/auth/signup", formData);
       router.push("/login");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed");
+      const errorMessage = err.response?.data?.message || "Unable to connect to the server. Please check your connection.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +44,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md space-y-8 rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-xl ring-1 ring-neutral-200 dark:ring-neutral-800"
@@ -59,7 +60,7 @@ export default function SignupPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSignup}>
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               className="flex items-center gap-2 rounded-md bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-600 dark:text-red-400"
