@@ -11,10 +11,10 @@ import { motion } from "framer-motion";
 
 export default function DashboardPage() {
   const { setIncidents, addIncident, updateIncident, removeIncident } = useIncidentStore();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [incidentToEdit, setIncidentToEdit] = useState<Incident | null>(null);
-  
+
   const [filterStatus, setFilterStatus] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -34,47 +34,16 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchIncidents();
 
-    // Setup SSE for real-time updates
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://192.168.29.78:5000";
-    const eventSource = new EventSource(`${baseURL}/incidents/stream?token=${token}`);
-
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "connected") return;
-        
-        // Ensure filter matches if there's an active filter
-        if (filterStatus && data.payload?.status && data.payload.status !== filterStatus) {
-           if (data.type !== "incident_deleted") {
-             // If updated to a different status than current filter, remove it from view
-             removeIncident(data.payload._id);
-             return;
-           }
-        }
-
-        switch (data.type) {
-          case "incident_created":
-            addIncident(data.payload);
-            break;
-          case "incident_updated":
-            updateIncident(data.payload._id, data.payload);
-            break;
-          case "incident_deleted":
-            removeIncident(data.payload._id);
-            break;
-        }
-      } catch (err) {
-        console.error("Error parsing SSE data", err);
-      }
-    };
+    // Poll every 5 seconds for real-time updates
+    // (SSE/WebSockets don't work on Vercel serverless)
+    const interval = setInterval(() => {
+      fetchIncidents();
+    }, 5000);
 
     return () => {
-      eventSource.close();
+      clearInterval(interval);
     };
-  }, [fetchIncidents, addIncident, updateIncident, removeIncident, filterStatus]);
+  }, [fetchIncidents]);
 
   const handleCreateNew = () => {
     setIncidentToEdit(null);
@@ -87,7 +56,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
@@ -99,7 +68,7 @@ export default function DashboardPage() {
             Manage your team's incidents and track resolutions.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
@@ -114,7 +83,7 @@ export default function DashboardPage() {
               <option value="resolved">Resolved</option>
             </select>
           </div>
-          
+
           <Button onClick={handleCreateNew}>
             <Plus className="h-4 w-4 mr-2" />
             New Incident
