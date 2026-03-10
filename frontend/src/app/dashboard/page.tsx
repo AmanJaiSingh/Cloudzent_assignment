@@ -5,6 +5,7 @@ import api from "@/lib/api";
 import { useIncidentStore, Incident } from "@/store/useIncidentStore";
 import { IncidentTable } from "@/components/IncidentTable";
 import { IncidentModal } from "@/components/IncidentModal";
+import { DashboardSummary } from "@/components/DashboardSummary";
 import { Button } from "@/components/ui/Button";
 import { Plus, Filter } from "lucide-react";
 import { motion } from "framer-motion";
@@ -90,6 +91,8 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      <DashboardSummary />
 
       {loading ? (
         <div className="flex justify-center p-12">
