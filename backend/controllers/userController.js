@@ -11,7 +11,10 @@ exports.getUsers = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password -__v");
+    const user = await User.findById(req.user.userId)
+      .select("-password -__v")
+      .populate("team_id", "name");
+
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (err) {

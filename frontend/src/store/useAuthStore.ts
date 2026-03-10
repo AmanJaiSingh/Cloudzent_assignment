@@ -5,7 +5,7 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  team_id: string;
+  team_id: string | { _id: string; name: string };
 }
 
 interface AuthState {

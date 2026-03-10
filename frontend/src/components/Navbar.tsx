@@ -26,9 +26,16 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           {user && (
             <div className="hidden sm:flex flex-col items-end mr-2 text-sm">
-              <span className="font-medium text-neutral-900 dark:text-neutral-50 leading-none mb-1">
-                {user.name}
-              </span>
+              <div className="flex items-center gap-2 mb-1">
+                {typeof user.team_id === "object" && user.team_id.name && (
+                  <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[10px] font-semibold tracking-wider uppercase text-neutral-500 dark:text-neutral-400">
+                    {user.team_id.name}
+                  </span>
+                )}
+                <span className="font-medium text-neutral-900 dark:text-neutral-50 leading-none">
+                  {user.name}
+                </span>
+              </div>
               <span className="text-xs text-neutral-500 dark:text-neutral-400 leading-none">
                 {user.email}
               </span>
