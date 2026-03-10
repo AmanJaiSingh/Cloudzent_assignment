@@ -33,7 +33,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 overflow-x-hidden max-w-full">
       <Navbar />
       <main className="container mx-auto p-4 md:p-8">
         {children}
