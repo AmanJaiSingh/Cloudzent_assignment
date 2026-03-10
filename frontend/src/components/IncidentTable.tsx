@@ -54,74 +54,101 @@ export function IncidentTable({ onEdit }: IncidentTableProps) {
     );
   };
 
+  const activeIncidents = incidents.filter(i => i.status === "open" || i.status === "investigating");
+  const resolvedIncidents = incidents.filter(i => i.status === "resolved");
+
+  const renderTable = (data: Incident[], title: string, emptyMessage: string) => {
+    if (data.length === 0) {
+      return (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-50 mb-4">{title}</h2>
+          <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm">
+            <ActivityIcon className="h-10 w-10 text-neutral-300 dark:text-neutral-700 mb-3" />
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm">{emptyMessage}</p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-50 mb-4">{title}</h2>
+        <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
+          <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-400 text-nowrap">
+            <thead className="bg-neutral-50 dark:bg-neutral-900/50 text-neutral-700 dark:text-neutral-300 uppercase text-xs font-semibold border-b border-neutral-200 dark:border-neutral-800">
+              <tr>
+                <th className="px-6 py-4">Title</th>
+                <th className="px-6 py-4">Severity</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Created At</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {data.map((incident) => (
+                  <motion.tr
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    key={incident._id}
+                    className="border-b border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                  >
+                    <td className="px-6 py-4 font-medium text-neutral-900 dark:text-neutral-50 truncate max-w-[200px]" title={incident.title}>
+                      {incident.title}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        {getSeverityIcon(incident.severity)}
+                        <span className="capitalize">{incident.severity}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {getStatusBadge(incident.status)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {new Date(incident.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-2">
+                      <Button variant="ghost" size="sm" onClick={() => onEdit(incident)}>
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-600"
+                        onClick={() => handleDelete(incident._id)}
+                        disabled={loadingId === incident._id}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   if (incidents.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm">
         <ActivityIcon className="h-12 w-12 text-neutral-300 dark:text-neutral-700 mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-50 mb-1">No incidents reported</h3>
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm">Your team currently has no open incidents.</p>
+        <p className="text-neutral-500 dark:text-neutral-400 text-sm">Your team currently has no reported incidents.</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
-      <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-400 text-nowrap">
-        <thead className="bg-neutral-50 dark:bg-neutral-900/50 text-neutral-700 dark:text-neutral-300 uppercase text-xs font-semibold border-b border-neutral-200 dark:border-neutral-800">
-          <tr>
-            <th className="px-6 py-4">Title</th>
-            <th className="px-6 py-4">Severity</th>
-            <th className="px-6 py-4">Status</th>
-            <th className="px-6 py-4">Created At</th>
-            <th className="px-6 py-4 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <AnimatePresence>
-            {incidents.map((incident) => (
-              <motion.tr
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                key={incident._id}
-                className="border-b border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
-              >
-                <td className="px-6 py-4 font-medium text-neutral-900 dark:text-neutral-50 truncate max-w-[200px]">
-                  {incident.title}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    {getSeverityIcon(incident.severity)}
-                    <span className="capitalize">{incident.severity}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  {getStatusBadge(incident.status)}
-                </td>
-                <td className="px-6 py-4">
-                  {new Date(incident.created_at).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 text-right space-x-2">
-                  <Button variant="ghost" size="sm" onClick={() => onEdit(incident)}>
-                    <Edit className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-500 hover:text-red-600"
-                    onClick={() => handleDelete(incident._id)}
-                    disabled={loadingId === incident._id}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
-                </td>
-              </motion.tr>
-            ))}
-          </AnimatePresence>
-        </tbody>
-      </table>
+    <div>
+      {renderTable(activeIncidents, "Active Incidents", "No active incidents currently reported.")}
+      {renderTable(resolvedIncidents, "Resolved Incidents", "No incidents have been resolved yet.")}
     </div>
   );
 }
