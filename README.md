@@ -109,14 +109,17 @@ Start frontend: `npm run dev`
 
 ## 🔑 Example Login Credentials
 
-You can create a new account easily on the Signup page, but here are example users if you seed the database:
+If you have run the `seed.js` script (or are observing the live DB), here are 6 sample users generated across different isolated teams. **All share the same password.**
 
-**User 1 (Admin/Engineer):**
-- **Email:** demo@example.com
-- **Password:** password123
-- **Team Name:** Backend Engineering
+**Password for ALL accounts:** `password123`
 
-**User 2 (Teammate - Will see the same incidents):**
-- **Email:** user2@example.com
-- **Password:** password123
-- **Team Name:** Backend Engineering
+| Name | Role / Department | Email |
+| :--- | :--- | :--- |
+| Alice Backend | Backend Engineering | `alice@cloudzent.com` |
+| Bob Backend | Backend Engineering | `bob@cloudzent.com` |
+| Charlie Frontend | Frontend Engineering | `charlie@cloudzent.com` |
+| Diana Frontend | Frontend Engineering | `diana@cloudzent.com` |
+| Eve DevOps | DevOps / Infrastructure | `eve@cloudzent.com` |
+| Frank DevOps | DevOps / Infrastructure | `frank@cloudzent.com` |
+
+*(Note: Try logging in as Alice and then as Charlie. You will notice their dashboards are completely different, demonstrating the strict Team Isolation architecture!)*
